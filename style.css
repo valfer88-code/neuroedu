@@ -1,0 +1,218 @@
+:root {
+    --primary: #2563eb;
+    --dark: #0f172a;
+    --sidebar-bg: #1e293b;
+    --bg: #f8fafc;
+    --text-main: #334155;
+    --accent: #10b981;
+    --danger: #ef4444;
+    --white: #ffffff;
+    --radius: 12px;
+}
+
+* { box-sizing: border-box; outline: none; }
+body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg); color: var(--text-main); }
+
+/* --- AUTH --- */
+#auth-container { position: fixed; inset: 0; background: var(--dark); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+.auth-card { background: var(--white); padding: 3rem; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+.auth-icon { font-size: 3rem; color: var(--primary); margin-bottom: 1rem; }
+.auth-inputs input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; }
+
+/* --- LAYOUT --- */
+.app-container { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: var(--sidebar-bg); color: white; height: 100vh; position: fixed; display: flex; flex-direction: column; padding: 1.5rem; transition: 0.3s; z-index: 1001; }
+.main-content { flex: 1; margin-left: 280px; padding: 2rem; max-width: calc(100% - 280px); }
+
+/* --- SIDEBAR --- */
+.sidebar-brand { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 12px; margin-bottom: 3rem; color: var(--primary); }
+.nav-menu { list-style: none; padding: 0; flex: 1; }
+.nav-item { padding: 12px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; transition: 0.2s; color: #94a3b8; }
+.nav-item:hover, .nav-item.active { background: rgba(37, 99, 235, 0.1); color: white; }
+.nav-item.active { background: var(--primary); }
+
+.sidebar-footer { border-top: 1px solid #334155; padding-top: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+.prof-profile { display: flex; align-items: center; gap: 10px; }
+.prof-avatar { width: 40px; height: 40px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.logout-btn { background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.2rem; }
+
+/* --- CARDS & TABLES --- */
+.card { background: var(--white); border-radius: var(--radius); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 1rem; background: #f1f5f9; color: var(--dark); font-weight: 600; }
+td { padding: 1rem; border-top: 1px solid #f1f5f9; }
+
+/* --- AGENDA & CALENDAR --- */
+.agenda-layout { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+#calendar { min-height: 600px; background: white; }
+.fc .fc-button-primary { background-color: var(--primary) !important; border: none !important; }
+.fc-toolbar-title { font-size: 1.1rem !important; font-weight: 700; }
+
+/* --- BUTTONS --- */
+button { border: none; cursor: pointer; transition: 0.2s; border-radius: 8px; font-weight: 600; }
+.btn-primary { background: var(--primary); color: white; padding: 12px 20px; }
+.btn-primary:hover { opacity: 0.9; }
+.btn-danger { background: var(--danger); color: white; padding: 10px; }
+.btn-secondary { background: #e2e8f0; color: var(--dark); padding: 10px 20px; }
+
+/* --- INFORME PDF --- */
+.report-paper { background: white; padding: 3rem; border: 1px solid #e2e8f0; max-width: 800px; margin: 0 auto; }
+.report-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 2rem; }
+.report-chart { max-width: 500px; margin: 2rem auto; }
+
+/* --- MOBILE --- */
+.mobile-header { display: none; }
+@media (max-width: 992px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main-content { margin-left: 0; max-width: 100%; }
+    .mobile-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem; background: var(--sidebar-bg); color: white; }
+    .agenda-layout { grid-template-columns: 1fr; }
+    .sidebar-overlay.active { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; }
+}
+
+.section { display: none; animation: fadeIn 0.3s; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* --- ESTILOS DEL DASHBOARD DE INFORME --- */
+.report-container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--bg);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.header-content { display: flex; align-items: center; gap: 20px; }
+.badge-date { background: var(--bg); padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; }
+
+.patient-info-strip {
+    display: flex;
+    justify-content: space-around;
+    background: var(--dark);
+    color: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.metrics-column { display: flex; flex-direction: column; gap: 15px; }
+
+.metric-card {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 5px solid var(--primary);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.metric-card.warning { border-left-color: var(--danger); }
+.metric-card.success { border-left-color: var(--accent); }
+.metric-card h2 { margin: 10px 0 0; font-size: 1.4rem; color: var(--dark); }
+/* --- ESTILO DE CAMPOS REDONDEADOS TIPO CHAT --- */
+
+input, select, textarea {
+    width: 100%;
+    padding: 16px 24px; /* Más espacio interno para que el texto respire */
+    font-size: 1rem;
+    background-color: #f0f2f5; /* Un gris muy suave de fondo */
+    border: 2px solid transparent; /* Sin borde inicial */
+    border-radius: 25px !important; /* El secreto del redondeado estilo chat */
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+    color: #1c1e21;
+}
+
+input:focus, select:focus {
+    background-color: #ffffff;
+    border-color: #4EADA5; /* El color secundario que veníamos usando */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    outline: none;
+}
+
+/* Botones con el mismo estilo redondeado */
+.btn-main, .btn-primary {
+    padding: 14px 28px;
+    border-radius: 25px; /* Misma curvatura que los inputs */
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    background-color: #4EADA5;
+    color: white;
+    transition: transform 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-main:hover {
+    background-color: #3d8b85;
+    transform: scale(1.02); /* Pequeño efecto de pulsado */
+}
+
+/* Buscadores (Search Bar) */
+.search-container {
+    background: #f0f2f5 !important;
+    border-radius: 25px !important;
+    padding: 6px 20px !important;
+    border: none !important;
+    display: flex;
+    align-items: center;
+}
+
+.search-container input {
+    background: transparent !important;
+    margin-bottom: 0 !important;
+    padding: 10px !important;
+}
+
+/* Tarjetas con bordes más suaves */
+.card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.04);
+    border: 1px solid #eaeaea;
+}
+
+.chart-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.canvas-holder { height: 350px; position: relative; }
+
+.analysis-card {
+    background: #fffbeb;
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px dashed #f59e0b;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .patient-info-strip { flex-direction: column; gap: 10px; }
+}

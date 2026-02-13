@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroEdu Pro v4.0 | Gestión Clínica</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+</head>
+<body>
+
+<div id="auth-container">
+    <div class="auth-card">
+        <div class="auth-icon"><i class="fas fa-brain"></i></div>
+        <h2>NeuroEdu Pro</h2>
+        <p id="auth-toggle-msg" onclick="toggleAuthMode()">¿No tienes cuenta? Regístrate aquí</p>
+        <div class="auth-inputs">
+            <input type="text" id="auth-user" placeholder="Nombre de usuario">
+            <input type="password" id="auth-pass" placeholder="Contraseña">
+            <button class="btn-primary" onclick="procesarAuth()" id="btn-auth-action">Iniciar Sesión</button>
+        </div>
+    </div>
+</div>
+
+<header class="mobile-header">
+    <button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+    <div class="mobile-logo">NeuroEdu Pro</div>
+    <div style="width: 40px;"></div>
+</header>
+
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="app-container">
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-nerve"></i>
+            <span>NeuroEdu <strong>Pro</strong></span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="navegar('pacientes')">
+                <i class="fas fa-hospital-user"></i> <span>Pacientes</span>
+            </li>
+            <li class="nav-item" onclick="navegar('agenda')">
+                <i class="fas fa-calendar-check"></i> <span>Agenda</span>
+            </li>
+            <li class="nav-item" onclick="navegar('test')">
+                <i class="fas fa-file-medical-alt"></i> <span>Evaluación</span>
+            </li>
+            <li class="nav-item" onclick="navegar('historial')">
+                <i class="fas fa-book-medical"></i> <span>Historial</span>
+            </li>
+            <li class="nav-item" onclick="navegar('perfil')">
+                <i class="fas fa-user-cog"></i> <span>Mi Perfil</span>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="prof-profile">
+                <div class="prof-avatar" id="avatar-letra">A</div>
+                <div class="prof-info">
+                    <span id="display-profesional">Cargando...</span>
+                    <small>Especialista</small>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="cerrarSesion()" title="Cerrar Sesión">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+       <section id="pacientes" class="section active">
+    <div class="view-header">
+        <h1>Gestión de Pacientes</h1>
+    </div>
+    <div class="card">
+        <h3 id="titulo-paciente-form">Nuevo Registro</h3>
+        <div class="form-row">
+            <input type="text" id="p-nombre" placeholder="Nombre Completo">
+            <input type="number" id="p-dni" placeholder="DNI">
+            <input type="number" id="p-edad" placeholder="Edad">
+            <input type="text" id="p-mutual" placeholder="Mutual">
+        </div>
+        <input type="hidden" id="p-id-edit" value="">
+        <button class="btn-primary" onclick="guardarPaciente()">Guardar Paciente</button>
+    </div>
+
+    <div class="card search-container">
+    <i class="fas fa-search" style="color: #65676b;"></i>
+    <input type="text" id="inputBuscarPaciente" placeholder="Escribe aquí para buscar..." onkeyup="filtrarPacientes()">
+</div>
+
+    <div class="card table-container">
+        <table>
+            <thead>
+                <tr><th>DNI</th><th>Nombre</th><th>Mutual</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="lista-pacientes-tabla"></tbody>
+        </table>
+    </div>
+</section>
+
+<section id="historial" class="section">
+    <div class="view-header">
+        <h1>Historial de Informes</h1>
+    </div>
+    
+    <div class="card search-container">
+        <i class="fas fa-search"></i>
+        <input type="text" id="inputBuscarHistorial" placeholder="Filtrar informes por paciente o test..." onkeyup="filtrarHistorial()">
+    </div>
+
+    <div class="card table-container">
+        <table>
+            <thead>
+                <tr><th>Fecha</th><th>Paciente</th><th>Test</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="tabla-historial"></tbody>
+        </table>
+    </div>
+</section>
+
+        <section id="agenda" class="section">
+            <div class="view-header">
+                <h1>Calendario de Sesiones</h1>
+                <p>Visualización por mes, semana y día.</p>
+            </div>
+            <div class="agenda-layout">
+                <div class="card agenda-sidebar">
+                    <h3 id="titulo-turno-form">Programar Turno</h3>
+                    <div class="input-group">
+                        <label>Paciente</label>
+                        <select id="turno-paciente"></select>
+                    </div>
+                    <div class="input-group">
+                        <label>Fecha y Hora</label>
+                        <input type="datetime-local" id="turno-fecha">
+                    </div>
+                    <input type="hidden" id="turno-id-edit" value="">
+                    <button class="btn-primary" onclick="guardarTurno()">Agendar Turno</button>
+                    <button class="btn-danger" id="btn-delete-turno" style="display:none; margin-top:10px;" onclick="borrarTurno()">Eliminar Turno</button>
+                </div>
+                <div class="card calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="test" class="section">
+            <div class="view-header"><h1>Evaluación Clínica</h1></div>
+            <div class="card">
+                <div class="form-row">
+                    <select id="test-paciente"></select>
+                    <select id="tipo-test" onchange="renderPreguntas()">
+                        <option value="tdah">TDAH (Criterios DSM-5)</option>
+                        <option value="ejecutivas">Funciones Ejecutivas</option>
+                    </select>
+                </div>
+                <div id="preguntas-dinamicas" class="questions-grid"></div>
+                <button class="btn-primary" onclick="finalizarTest()">Generar Informe PDF</button>
+            </div>
+        </section>
+
+        <section id="historial" class="section">
+            <div class="view-header"><h1>Historial de Informes</h1></div>
+            <div class="card search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchHistorial" placeholder="Buscar por nombre o DNI..." onkeyup="filtrarHistorial()">
+            </div>
+            <div class="card table-container">
+                <table>
+                    <thead><tr><th>Fecha</th><th>Paciente</th><th>Test</th><th>Acciones</th></tr></thead>
+                    <tbody id="tabla-historial"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="perfil" class="section">
+            <div class="view-header"><h1>Configuración de Perfil</h1></div>
+            <div class="card">
+                <label>Nombre Profesional y Firma</label>
+                <input type="text" id="perf-firma" placeholder="Ej: Lic. Julieta Gómez - Neuropsicóloga">
+                <button class="btn-primary" onclick="actualizarPerfil()" style="margin-top:10px;">Actualizar Firma</button>
+            </div>
+        </section>
+
+       <section id="dashboard" class="section">
+    <div class="view-header">
+        <button onclick="navegar('historial')" class="btn-secondary"><i class="fas fa-arrow-left"></i> Volver</button>
+        <button onclick="exportarPDF()" class="btn-primary"><i class="fas fa-download"></i> Exportar PDF</button>
+    </div>
+
+    <div id="seccion-informe" class="report-container">
+        <div class="report-header">
+            <div class="header-content">
+                <i class="fas fa-brain fa-3x"></i>
+                <div>
+                    <h2>NEUROEDU PRO | DASHBOARD CLÍNICO</h2>
+                    <p id="firma-reporte"></p>
+                </div>
+            </div>
+            <div id="rep-fecha" class="badge-date"></div>
+        </div>
+
+        <div class="patient-info-strip">
+            <p><strong>Paciente:</strong> <span id="rep-nombre"></span></p>
+            <p><strong>DNI:</strong> <span id="rep-dni"></span></p>
+            <p><strong>Evaluación:</strong> <span id="rep-test"></span></p>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="metrics-column">
+                <div class="metric-card">
+                    <small>NIVEL GLOBAL</small>
+                    <h2 id="dash-nivel-global">-</h2>
+                </div>
+                <div class="metric-card warning">
+                    <small>ÁREA DE MAYOR RIESGO</small>
+                    <h2 id="dash-area-critica">-</h2>
+                </div>
+                <div class="metric-card success">
+                    <small>FORTALEZA DETECTADA</small>
+                    <h2 id="dash-fortaleza">-</h2>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Perfil de Competencias</h3>
+                <div class="canvas-holder">
+                    <canvas id="canvasGrafico"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="analysis-card">
+            <h3><i class="fas fa-microscope"></i> Observaciones Clínicas</h3>
+            <p id="rep-analisis"></p>
+        </div>
+    </div>
+</section>
+    </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
