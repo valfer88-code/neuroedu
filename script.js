@@ -181,15 +181,29 @@ function guardarTurno() {
     const pIdx = document.getElementById('turno-paciente').value;
     const fechaHora = document.getElementById('turno-fecha').value;
     const idEdit = document.getElementById('turno-id-edit').value;
-    if(!fechaHora || pIdx === "") return alert("Complete los datos");
 
-    const data = { id: idEdit || Date.now().toString(), title: pacientes[pIdx].nombre, start: fechaHora, pIdx };
-    if(!idEdit) turnos.push(data);
-    else { const i = turnos.findIndex(x => x.id == idEdit); turnos[i] = data; }
+    // Validación de seguridad
+    if(!fechaHora || pIdx === "") return alert("Debe seleccionar un paciente y una fecha.");
+    if(!pacientes[pIdx]) return alert("El paciente seleccionado no existe.");
+
+    const data = { 
+        id: idEdit || Date.now().toString(), 
+        title: pacientes[pIdx].nombre, 
+        start: fechaHora, 
+        pIdx: pIdx 
+    };
+
+    if(!idEdit) {
+        turnos.push(data);
+    } else { 
+        const i = turnos.findIndex(x => x.id == idEdit); 
+        if(i !== -1) turnos[i] = data; 
+    }
 
     localStorage.setItem('turnos', JSON.stringify(turnos));
     resetTurnoForm();
-    initCalendar();
+    initCalendar(); // Refresca el calendario inmediatamente
+    alert("Turno guardado correctamente");
 }
 
 function cargarTurnoEditar(t) {
@@ -586,4 +600,5 @@ function filtrarHistorial() {
     const q = document.getElementById('inputBuscarHistorial').value.toLowerCase();
     const f = historial.filter(h => h.paciente.toLowerCase().includes(q) || h.dni.includes(q));
     renderHistorial(f);
+
 }
