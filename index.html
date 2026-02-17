@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroEdu Pro v4.0 | Gestión Clínica</title>
+    <title>NeuroEdu v4.0 | Gestión Clínica</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="script.js"></script>
+    
+
+    <link rel="icon" type="image/png" href="img/Gemini_Generated_Image_1oo6kn1oo6kn1oo6.png">
 </head>
 <body>
 
@@ -57,6 +61,9 @@
             <li class="nav-item" onclick="navegar('historial')">
                 <i class="fas fa-book-medical"></i> <span>Historial</span>
             </li>
+            <li class="nav-item" onclick="navegar('evolucion')">
+    <i class="fas fa-chart-line"></i> <span>Evolución</span>
+</li>
             <li class="nav-item" onclick="navegar('perfil')">
                 <i class="fas fa-user-cog"></i> <span>Mi Perfil</span>
             </li>
@@ -76,177 +83,202 @@
         </div>
     </nav>
 
-    <main class="main-content">
-       <section id="pacientes" class="section active">
-    <div class="view-header">
-        <h1>Gestión de Pacientes</h1>
-    </div>
-    <div class="card">
-        <h3 id="titulo-paciente-form">Nuevo Registro</h3>
-        <div class="form-row">
-            <input type="text" id="p-nombre" placeholder="Nombre Completo">
-            <input type="number" id="p-dni" placeholder="DNI">
-            <input type="number" id="p-edad" placeholder="Edad">
-            <input type="text" id="p-mutual" placeholder="Mutual">
+   <main class="main-content">
+    <section id="pacientes" class="section active">
+        <div class="view-header"><h1>Gestión de Pacientes</h1></div>
+        <div class="card">
+            <h3 id="titulo-paciente-form">Nuevo Registro</h3>
+            <div class="form-row">
+                <input type="text" id="p-nombre" placeholder="Nombre Completo">
+                <input type="number" id="p-dni" placeholder="DNI">
+                <input type="number" id="p-edad" placeholder="Edad">
+                <input type="text" id="p-mutual" placeholder="Mutual">
+            </div>
+            <input type="hidden" id="p-id-edit" value="">
+            <button class="btn-primary" onclick="guardarPaciente()">Guardar Paciente</button>
         </div>
-        <input type="hidden" id="p-id-edit" value="">
-        <button class="btn-primary" onclick="guardarPaciente()">Guardar Paciente</button>
-    </div>
 
-    <div class="card search-container">
-    <i class="fas fa-search" style="color: #65676b;"></i>
-    <input type="text" id="inputBuscarPaciente" placeholder="Escribe aquí para buscar..." onkeyup="filtrarPacientes()">
-</div>
+        <div class="card search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="inputBuscarPaciente" placeholder="Buscar paciente..." onkeyup="filtrarPacientes()">
+        </div>
 
-    <div class="card table-container">
-        <table>
-            <thead>
-                <tr><th>DNI</th><th>Nombre</th><th>Mutual</th><th>Acciones</th></tr>
-            </thead>
-            <tbody id="lista-pacientes-tabla"></tbody>
-        </table>
-    </div>
-</section>
+        <div class="card table-container">
+            <table>
+                <thead><tr><th>DNI</th><th>Nombre</th><th>Mutual</th><th>Acciones</th></tr></thead>
+                <tbody id="lista-pacientes-tabla"></tbody>
+            </table>
+        </div>
+    </section>
 
-<section id="historial" class="section">
-    <div class="view-header">
-        <h1>Historial de Informes</h1>
-    </div>
+    <section id="agenda" class="section">
+        <div class="view-header"><h1>Calendario de Sesiones</h1></div>
+        <div class="agenda-layout">
+            <div class="card agenda-sidebar">
+                <h3 id="titulo-turno-form">Programar Turno</h3>
+                <div class="input-group">
+                    <label>Paciente</label>
+                    <select id="turno-paciente"></select>
+                </div>
+                <div class="input-group">
+                    <label>Fecha y Hora</label>
+                    <input type="datetime-local" id="turno-fecha">
+                </div>
+                <input type="hidden" id="turno-id-edit" value="">
+                <button class="btn-primary" onclick="guardarTurno()">Agendar Turno</button>
+                <button class="btn-danger" id="btn-delete-turno" style="display:none; margin-top:10px;" onclick="borrarTurno()">Eliminar Turno</button>
+            </div>
+            <div class="card calendar-container">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="test" class="section">
+        <div class="view-header"><h1>Evaluación Clínica</h1></div>
+        <div class="card">
+            <div class="form-row">
+                <select id="test-paciente"></select>
+                <select id="tipo-test" onchange="renderPreguntas()">
+                    <option value="tdah">TDAH (Criterios DSM-5)</option>
+                    <option value="ejecutivas">Funciones Ejecutivas</option>
+                </select>
+            </div>
+            <div id="preguntas-dinamicas" class="questions-grid"></div>
+            <button class="btn-primary" onclick="finalizarTest()">Finalizar y Ver Informe</button>
+        </div>
+    </section>
+
+    <section id="historial" class="section">
+        <div class="view-header"><h1>Historial de Informes</h1></div>
+        <div class="card search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="inputBuscarHistorial" placeholder="Buscar por nombre o DNI..." onkeyup="filtrarHistorial()">
+        </div>
+        <div class="card table-container">
+            <table>
+                <thead><tr><th>Fecha</th><th>Paciente</th><th>Test</th><th>Acciones</th></tr></thead>
+                <tbody id="tabla-historial"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section id="perfil" class="section">
+        <div class="view-header"><h1>Configuración</h1></div>
+        <div class="card">
+            <label>Nombre Profesional y Firma</label>
+            <input type="text" id="perf-firma" placeholder="Ej: Lic. Julieta Gómez">
+            <button class="btn-primary" onclick="actualizarPerfil()" style="margin-top:10px;">Actualizar Firma</button>
+        </div>
+        <div class="card">
+            <h3>Copia de Seguridad</h3>
+            <div class="form-row">
+                <button class="btn-secondary" onclick="exportarDatos()"><i class="fas fa-download"></i> Descargar Datos</button>
+                <button class="btn-secondary" onclick="importarDatos()"><i class="fas fa-upload"></i> Restaurar Datos</button>
+            </div>
+            <input type="file" id="input-importar" style="display:none" onchange="procesarArchivoBackup(event)">
+        </div>
+    </section>
+
+<section id="evolucion" class="section">
+    <div class="view-header no-print"><h1>Evolución del Paciente</h1></div>
     
-    <div class="card search-container">
-        <i class="fas fa-search"></i>
-        <input type="text" id="inputBuscarHistorial" placeholder="Filtrar informes por paciente o test..." onkeyup="filtrarHistorial()">
+    <div class="card no-print">
+        <div class="form-row">
+            <select id="evo-paciente" onchange="renderGraficoEvolucion()"></select>
+            <button onclick="prepararInforme()" class="btn-primary">Generar Informe</button>
+        </div>
+        <div style="height: 300px; margin-top:20px;">
+            <canvas id="canvasEvolucion"></canvas>
+        </div>
+        <div style="margin-top:20px;">
+            <label><strong>Conclusión Clínica (Escribe aquí):</strong></label>
+            <textarea id="evo-conclusion-input" style="width: 100%; height: 120px; padding: 10px; margin-top:10px; border-radius: 8px; border: 1px solid #ddd;" placeholder="Escriba sus observaciones..."></textarea>
+        </div>
     </div>
 
-    <div class="card table-container">
-        <table>
-            <thead>
-                <tr><th>Fecha</th><th>Paciente</th><th>Test</th><th>Acciones</th></tr>
-            </thead>
-            <tbody id="tabla-historial"></tbody>
-        </table>
+    <div id="informe-final-a4" style="display:none; width: 700px; margin: 20px auto; background: white; padding: 50px; border: 1px solid #eee; color: #000; font-family: Arial, sans-serif;">
+        <div style="text-align: center; border-bottom: 3px solid #4EADA5; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="color: #4EADA5; margin: 0;">REPORTE DE EVOLUCIÓN</h1>
+        </div>
+        <div id="print-datos-paciente" style="margin-bottom: 20px; font-size: 14px; line-height: 1.5;"></div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h3 style="text-align: left; border-left: 5px solid #4EADA5; padding-left: 10px;">Progreso de Sesiones</h3>
+            <div id="print-grafico-img"></div> </div>
+
+        <div>
+            <h3 style="border-left: 5px solid #4EADA5; padding-left: 10px;">Observaciones Finales</h3>
+            <div id="print-conclusion-texto" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; min-height: 100px; padding: 10px;"></div>
+        </div>
+
+        <div style="margin-top: 60px; text-align: right;">
+            <p>___________________________________</p>
+            <p style="font-weight: bold;" id="print-firma"></p>
+        </div>
     </div>
+
+  <button class="btn-primary" onclick="exportarEvaluacionIndividualPDF()">
+    <i class="fas fa-file-pdf"></i> Descargar PDF de Evaluación
+</button>
 </section>
 
-        <section id="agenda" class="section">
-            <div class="view-header">
-                <h1>Calendario de Sesiones</h1>
-                <p>Visualización por mes, semana y día.</p>
-            </div>
-            <div class="agenda-layout">
-                <div class="card agenda-sidebar">
-                    <h3 id="titulo-turno-form">Programar Turno</h3>
-                    <div class="input-group">
-                        <label>Paciente</label>
-                        <select id="turno-paciente"></select>
+    <section id="dashboard" class="section">
+        <div class="view-header">
+            <button onclick="navegar('historial')" class="btn-secondary"><i class="fas fa-arrow-left"></i> Volver al Historial</button>
+            <button onclick="exportarPDF()" class="btn-primary"><i class="fas fa-file-pdf"></i> Guardar como PDF</button>
+        </div>
+
+        <div id="seccion-informe" class="report-container" style="background: white; padding: 20px; border-radius: 10px;">
+            <div class="report-header">
+                <div class="header-content">
+                    <i class="fas fa-brain fa-3x" style="color: #4EADA5;"></i>
+                    <div>
+                        <h2>NEUROEDU PRO | REPORTE CLÍNICO</h2>
+                        <p id="firma-reporte" style="font-weight: bold; color: #666;"></p>
                     </div>
-                    <div class="input-group">
-                        <label>Fecha y Hora</label>
-                        <input type="datetime-local" id="turno-fecha">
+                </div>
+                <div id="rep-fecha" class="badge-date"></div>
+            </div>
+
+            <div class="patient-info-strip" style="background: #f8fafc; padding: 15px; margin: 20px 0; border-radius: 8px; display: grid; grid-template-columns: repeat(3, 1fr);">
+                <p><strong>Paciente:</strong> <span id="rep-nombre"></span></p>
+                <p><strong>DNI:</strong> <span id="rep-dni"></span></p>
+                <p><strong>Evaluación:</strong> <span id="rep-test"></span></p>
+            </div>
+
+            <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+                <div class="metrics-column">
+                    <div class="metric-card" style="border-left: 5px solid #2563eb; padding: 15px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
+                        <small>NIVEL GLOBAL</small>
+                        <h2 id="dash-nivel-global">-</h2>
                     </div>
-                    <input type="hidden" id="turno-id-edit" value="">
-                    <button class="btn-primary" onclick="guardarTurno()">Agendar Turno</button>
-                    <button class="btn-danger" id="btn-delete-turno" style="display:none; margin-top:10px;" onclick="borrarTurno()">Eliminar Turno</button>
+                    <div class="metric-card" style="border-left: 5px solid #ef4444; padding: 15px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;">
+                        <small>PUNTO CRÍTICO</small>
+                        <h2 id="dash-area-critica">-</h2>
+                    </div>
+                    <div class="metric-card" style="border-left: 5px solid #10b981; padding: 15px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <small>FORTALEZA</small>
+                        <h2 id="dash-fortaleza">-</h2>
+                    </div>
                 </div>
-                <div class="card calendar-container">
-                    <div id="calendar"></div>
-                </div>
-            </div>
-        </section>
 
-        <section id="test" class="section">
-            <div class="view-header"><h1>Evaluación Clínica</h1></div>
-            <div class="card">
-                <div class="form-row">
-                    <select id="test-paciente"></select>
-                    <select id="tipo-test" onchange="renderPreguntas()">
-                        <option value="tdah">TDAH (Criterios DSM-5)</option>
-                        <option value="ejecutivas">Funciones Ejecutivas</option>
-                    </select>
-                </div>
-                <div id="preguntas-dinamicas" class="questions-grid"></div>
-                <button class="btn-primary" onclick="finalizarTest()">Generar Informe PDF</button>
-            </div>
-        </section>
-
-        <section id="historial" class="section">
-            <div class="view-header"><h1>Historial de Informes</h1></div>
-            <div class="card search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchHistorial" placeholder="Buscar por nombre o DNI..." onkeyup="filtrarHistorial()">
-            </div>
-            <div class="card table-container">
-                <table>
-                    <thead><tr><th>Fecha</th><th>Paciente</th><th>Test</th><th>Acciones</th></tr></thead>
-                    <tbody id="tabla-historial"></tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="perfil" class="section">
-            <div class="view-header"><h1>Configuración de Perfil</h1></div>
-            <div class="card">
-                <label>Nombre Profesional y Firma</label>
-                <input type="text" id="perf-firma" placeholder="Ej: Lic. Julieta Gómez - Neuropsicóloga">
-                <button class="btn-primary" onclick="actualizarPerfil()" style="margin-top:10px;">Actualizar Firma</button>
-            </div>
-        </section>
-
-       <section id="dashboard" class="section">
-    <div class="view-header">
-        <button onclick="navegar('historial')" class="btn-secondary"><i class="fas fa-arrow-left"></i> Volver</button>
-        <button onclick="exportarPDF()" class="btn-primary"><i class="fas fa-download"></i> Exportar PDF</button>
-    </div>
-
-    <div id="seccion-informe" class="report-container">
-        <div class="report-header">
-            <div class="header-content">
-                <i class="fas fa-brain fa-3x"></i>
-                <div>
-                    <h2>NEUROEDU PRO | DASHBOARD CLÍNICO</h2>
-                    <p id="firma-reporte"></p>
-                </div>
-            </div>
-            <div id="rep-fecha" class="badge-date"></div>
-        </div>
-
-        <div class="patient-info-strip">
-            <p><strong>Paciente:</strong> <span id="rep-nombre"></span></p>
-            <p><strong>DNI:</strong> <span id="rep-dni"></span></p>
-            <p><strong>Evaluación:</strong> <span id="rep-test"></span></p>
-        </div>
-
-        <div class="dashboard-grid">
-            <div class="metrics-column">
-                <div class="metric-card">
-                    <small>NIVEL GLOBAL</small>
-                    <h2 id="dash-nivel-global">-</h2>
-                </div>
-                <div class="metric-card warning">
-                    <small>ÁREA DE MAYOR RIESGO</small>
-                    <h2 id="dash-area-critica">-</h2>
-                </div>
-                <div class="metric-card success">
-                    <small>FORTALEZA DETECTADA</small>
-                    <h2 id="dash-fortaleza">-</h2>
+                <div class="chart-card" style="background: #fff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3>Perfil de Competencias (Radar)</h3>
+                    <div class="canvas-holder" style="position: relative; height:300px;">
+                        <canvas id="canvasGrafico"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="chart-card">
-                <h3>Perfil de Competencias</h3>
-                <div class="canvas-holder">
-                    <canvas id="canvasGrafico"></canvas>
-                </div>
+            <div class="analysis-card" style="margin-top: 20px; padding: 15px; background: #f0fdfa; border-radius: 10px;">
+                <h3><i class="fas fa-microscope"></i> Conclusión y Observaciones</h3>
+                <p id="rep-analisis" style="line-height: 1.6; color: #334155;"></p>
             </div>
         </div>
+    </section>
 
-        <div class="analysis-card">
-            <h3><i class="fas fa-microscope"></i> Observaciones Clínicas</h3>
-            <p id="rep-analisis"></p>
-        </div>
-    </div>
-</section>
-    </main>
+</main>
 </div>
 
 <script src="script.js"></script>

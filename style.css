@@ -216,3 +216,78 @@ input:focus, select:focus {
     .dashboard-grid { grid-template-columns: 1fr; }
     .patient-info-strip { flex-direction: column; gap: 10px; }
 }
+#informe-final-a4 {
+    background: white;
+    padding: 20mm;
+    margin: 20px auto;
+    width: 210mm; /* Ancho A4 */
+    min-height: 297mm;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    display: none; /* Se activa al generar */
+}
+
+@media print {
+    #informe-final-a4 {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+    }
+}
+
+/* Asegura que el contenido sea capturable por la librería */
+/* Estilo para la vista previa en pantalla */
+#informe-final-a4 {
+    background: white;
+    padding: 15mm;
+    margin: 20px auto;
+    width: 210mm;
+    min-height: auto;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    font-family: 'Inter', sans-serif;
+    display: none;
+}
+
+/* --- REGLAS CRÍTICAS PARA EL PDF --- */
+@media print {
+    #informe-final-a4 {
+        margin: 0 !important;
+        padding: 10mm !important; /* Margen interno más pequeño en el PDF */
+        width: 100% !important;
+        box-shadow: none !important;
+        display: block !important;
+    }
+
+    /* Evita que cualquier elemento interno cree saltos de página */
+    #informe-final-a4 * {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Forzar que el gráfico no sea gigante */
+    #img-grafico-final {
+        max-height: 8cm !important; /* Altura máxima controlada en el PDF */
+        width: auto !important;
+        margin: 10px auto !important;
+    }
+
+    /* Achicar textos solo en el PDF */
+    #print-datos-paciente { font-size: 11pt !important; }
+    #print-conclusion-texto { font-size: 10pt !important; }
+    #print-firma { margin-top: 20px !important; }
+}
+/* Esto asegura que el contenido sea "leíble" por la cámara de html2canvas */
+#informe-final-a4 {
+    display: block !important; /* Forzamos bloque */
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* Evita que el fondo del body interfiera */
+.html2canvas-container { 
+    width: 210mm !important; 
+    height: 297mm !important; 
+}
